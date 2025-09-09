@@ -6,14 +6,6 @@ Welcome to the AI English Tutor, a comprehensive web application designed to hel
 
 This application serves as a personal English learning companion. It leverages the power of Google's Gemini AI to generate unique stories, provide translations, and offer intelligent assistance, making the learning process engaging and effective. Whether you're looking to improve your reading, typing, pronunciation, or vocabulary, this app has a feature to help you achieve your goals.
 
-## 🌐 Live Demo
-
-You can try out a live version of the application here:
-
-[**Launch AI English Tutor**](https://your-demo-url-here.com)
-
-_Note: The live demo uses a shared API key and may have usage limits._
-
 ## ✨ Key Features
 
 - **📖 AI-Generated Stories**: Dynamically generates short, moral stories tailored to the user's selected English proficiency level (Beginner, Intermediate, Advanced).
