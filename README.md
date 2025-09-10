@@ -98,7 +98,6 @@ Create a .env.local file in the root:
    ```bash
    npm run dev
 
-
 Open http://localhost:5173
  in your browser.
 
