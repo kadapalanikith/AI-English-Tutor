@@ -86,17 +86,17 @@ This project is built with **Vite** for fast development.
    git clone https://github.com/yourusername/ai-english-tutor.git
    cd ai-english-tutor
 2. Install dependencies:
-
-npm install
+   ```bash
+   npm install
 
 3. Add your Gemini API key:
 Create a .env.local file in the root:
-
-VITE_API_KEY=your_gemini_api_key_here
+   ```bash
+   VITE_API_KEY=your_gemini_api_key_here
 
 4. Run the dev server:
-
-npm run dev
+   ```bash
+   npm run dev
 
 
 Open http://localhost:5173
