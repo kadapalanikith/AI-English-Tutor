@@ -9,8 +9,8 @@ const CharSpan = memo(({ char, state, isCurrent }) => {
     state === true
       ? 'bg-brand-100 text-brand-800'
       : state === false
-      ? 'bg-red-100 text-red-700 underline decoration-wavy'
-      : '';
+        ? 'bg-red-100 text-red-700 underline decoration-wavy'
+        : '';
 
   return (
     <span className={`relative px-0.5 py-1 rounded transition-colors duration-150 ${cls}`}>
@@ -32,10 +32,10 @@ CharSpan.displayName = 'CharSpan';
 const TypingPractice = ({ text, onSessionComplete }) => {
   const chars = useMemo(() => text.split(''), [text]);
 
-  const [pos,       setPos]       = useState(0);
-  const [status,    setStatus]    = useState(() => Array(chars.length).fill(null));
+  const [pos, setPos] = useState(0);
+  const [status, setStatus] = useState(() => Array(chars.length).fill(null));
   const [startedAt, setStartedAt] = useState(null);
-  const [endedAt,   setEndedAt]   = useState(null);
+  const [endedAt, setEndedAt] = useState(null);
 
   // Reset when text changes
   useEffect(() => {
@@ -46,30 +46,41 @@ const TypingPractice = ({ text, onSessionComplete }) => {
   }, [text, chars.length]);
 
   // Keyboard handler
-  const handleKeyDown = useCallback((e) => {
-    if (e.ctrlKey || e.altKey || e.metaKey || endedAt) return;
-    if (!startedAt) setStartedAt(Date.now());
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey || endedAt) return;
+      if (!startedAt) setStartedAt(Date.now());
 
-    if (e.key === 'Backspace') {
-      e.preventDefault();
-      setPos((p) => {
-        const newPos = Math.max(0, p - 1);
-        setStatus((prev) => { const next = [...prev]; next[newPos] = null; return next; });
-        return newPos;
-      });
-      return;
-    }
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        setPos((p) => {
+          const newPos = Math.max(0, p - 1);
+          setStatus((prev) => {
+            const next = [...prev];
+            next[newPos] = null;
+            return next;
+          });
+          return newPos;
+        });
+        return;
+      }
 
-    if (e.key.length === 1 && pos < chars.length) {
-      e.preventDefault();
-      setStatus((prev) => { const next = [...prev]; next[pos] = e.key === chars[pos]; return next; });
-      setPos((p) => {
-        const nextPos = p + 1;
-        if (nextPos >= chars.length) setEndedAt(Date.now());
-        return nextPos;
-      });
-    }
-  }, [chars, pos, startedAt, endedAt]);
+      if (e.key.length === 1 && pos < chars.length) {
+        e.preventDefault();
+        setStatus((prev) => {
+          const next = [...prev];
+          next[pos] = e.key === chars[pos];
+          return next;
+        });
+        setPos((p) => {
+          const nextPos = p + 1;
+          if (nextPos >= chars.length) setEndedAt(Date.now());
+          return nextPos;
+        });
+      }
+    },
+    [chars, pos, startedAt, endedAt],
+  );
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -82,9 +93,9 @@ const TypingPractice = ({ text, onSessionComplete }) => {
 
     const elapsedMin = (endedAt - startedAt) / 60000;
     const correctChars = status.filter((s) => s === true).length;
-    const typedChars   = status.filter((s) => s !== null).length || 1;
-    const wpm          = elapsedMin > 0 ? Math.round((correctChars / 5) / elapsedMin) : 0;
-    const accuracy     = Math.round((correctChars / typedChars) * 100);
+    const typedChars = status.filter((s) => s !== null).length || 1;
+    const wpm = elapsedMin > 0 ? Math.round(correctChars / 5 / elapsedMin) : 0;
+    const accuracy = Math.round((correctChars / typedChars) * 100);
 
     // Collect incorrect words
     const words = tokenizeWithSpaces(text);
@@ -113,11 +124,12 @@ const TypingPractice = ({ text, onSessionComplete }) => {
   }, [chars.length]);
 
   // Live stats
-  const typedCount  = status.filter((s) => s !== null).length;
+  const typedCount = status.filter((s) => s !== null).length;
   const correctCount = status.filter((s) => s === true).length;
-  const accuracy    = typedCount ? Math.round((correctCount / typedCount) * 100) : 100;
-  const elapsedMs   = startedAt ? ((endedAt || Date.now()) - startedAt) : 0;
-  const wpmLive     = startedAt && elapsedMs > 1000 ? Math.round((correctCount / 5) / (elapsedMs / 60000)) : 0;
+  const accuracy = typedCount ? Math.round((correctCount / typedCount) * 100) : 100;
+  const elapsedMs = startedAt ? (endedAt || Date.now()) - startedAt : 0;
+  const wpmLive =
+    startedAt && elapsedMs > 1000 ? Math.round(correctCount / 5 / (elapsedMs / 60000)) : 0;
 
   return (
     <Card>
@@ -128,9 +140,14 @@ const TypingPractice = ({ text, onSessionComplete }) => {
           <p className="text-sm text-slate-500 mt-0.5">Click the area below and start typing.</p>
         </div>
         <div className="flex gap-6 sm:flex-col sm:gap-0 sm:text-right">
-          <div className="text-sm text-slate-500">WPM: <strong className="text-lg text-slate-700">{wpmLive}</strong></div>
           <div className="text-sm text-slate-500">
-            Accuracy: <strong className={`text-lg ${accuracy > 90 ? 'text-green-600' : 'text-slate-700'}`}>{accuracy}%</strong>
+            WPM: <strong className="text-lg text-slate-700">{wpmLive}</strong>
+          </div>
+          <div className="text-sm text-slate-500">
+            Accuracy:{' '}
+            <strong className={`text-lg ${accuracy > 90 ? 'text-green-600' : 'text-slate-700'}`}>
+              {accuracy}%
+            </strong>
           </div>
         </div>
       </div>

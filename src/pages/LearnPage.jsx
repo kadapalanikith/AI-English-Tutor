@@ -1,7 +1,16 @@
 import LearnSection from '../components/learn/LearnSection';
 import PersonalizedExercise from '../components/ui/PersonalizedExercise';
 
-const LearnPage = ({ story, lang, dictionary, fetchNewStory, isLoading, loadingProgress, personalizedExercise, clearExercise }) => (
+const LearnPage = ({
+  story,
+  lang,
+  dictionary,
+  fetchNewStory,
+  isLoading,
+  loadingProgress,
+  personalizedExercise,
+  clearExercise,
+}) => (
   <div>
     <LearnSection
       story={story}

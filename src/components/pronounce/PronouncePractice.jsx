@@ -4,9 +4,7 @@ import { MicIcon, RestartIcon, SpeakerIcon, CloseIcon } from '../ui/Icons';
 import { similarityPct } from '../../utils';
 
 const SpeechRecognitionAPI =
-  typeof window !== 'undefined'
-    ? window.SpeechRecognition || window.webkitSpeechRecognition
-    : null;
+  typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null;
 const isSpeechRecognitionSupported = !!SpeechRecognitionAPI;
 
 const getColorForScore = (score) => {
@@ -22,24 +20,24 @@ const getColorForScore = (score) => {
  * }} props
  */
 const PronouncePractice = ({ text, onSessionComplete }) => {
-  const [isListening,      setIsListening]      = useState(false);
-  const [transcript,       setTranscript]       = useState('');
-  const [finalTranscript,  setFinalTranscript]  = useState('');
-  const [score,            setScore]            = useState(null);
-  const [wordScores,       setWordScores]       = useState(null);
-  const [error,            setError]            = useState(null);
-  const [ttsInput,         setTtsInput]         = useState('');
-  const [isSpeaking,       setIsSpeaking]       = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [finalTranscript, setFinalTranscript] = useState('');
+  const [score, setScore] = useState(null);
+  const [wordScores, setWordScores] = useState(null);
+  const [error, setError] = useState(null);
+  const [ttsInput, setTtsInput] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const recognitionRef       = useRef(null);
-  const utteranceRefTTS      = useRef(null);
-  const shouldProcessOnEnd   = useRef(false);
+  const recognitionRef = useRef(null);
+  const utteranceRefTTS = useRef(null);
+  const shouldProcessOnEnd = useRef(false);
 
   const reset = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.onresult = null;
-      recognitionRef.current.onend    = null;
-      recognitionRef.current.onerror  = null;
+      recognitionRef.current.onend = null;
+      recognitionRef.current.onerror = null;
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
@@ -53,13 +51,18 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
   }, []);
 
   // Reset when story changes
-  useEffect(() => { reset(); }, [text, reset]);
+  useEffect(() => {
+    reset();
+  }, [text, reset]);
 
   // Cleanup on unmount
-  useEffect(() => () => {
-    recognitionRef.current?.stop();
-    window.speechSynthesis?.cancel();
-  }, []);
+  useEffect(
+    () => () => {
+      recognitionRef.current?.stop();
+      window.speechSynthesis?.cancel();
+    },
+    [],
+  );
 
   // Process transcript once listening stops
   useEffect(() => {
@@ -70,12 +73,12 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
         setScore(calculatedScore);
 
         const originalTokens = text.split(/\s+/).filter(Boolean);
-        const spokenTokens   = result.split(/\s+/).filter(Boolean);
+        const spokenTokens = result.split(/\s+/).filter(Boolean);
 
         const calculatedWordScores = originalTokens.map((originalToken, index) => {
-          const spokenToken   = spokenTokens[index] || '';
+          const spokenToken = spokenTokens[index] || '';
           const cleanOriginal = originalToken.toLowerCase().replace(/[.,]/g, '');
-          const cleanSpoken   = spokenToken.toLowerCase().replace(/[.,]/g, '');
+          const cleanSpoken = spokenToken.toLowerCase().replace(/[.,]/g, '');
           return { word: originalToken, score: similarityPct(cleanOriginal, cleanSpoken) };
         });
         setWordScores(calculatedWordScores);
@@ -107,9 +110,12 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(ttsInput);
-    utterance.lang    = 'en-US';
+    utterance.lang = 'en-US';
     utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend   = () => { setIsSpeaking(false); utteranceRefTTS.current = null; };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      utteranceRefTTS.current = null;
+    };
     utterance.onerror = (e) => {
       if (e.error !== 'interrupted') console.error('TTS error:', e.error);
       setIsSpeaking(false);
@@ -132,13 +138,13 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
 
       const recognition = new SpeechRecognitionAPI();
       recognitionRef.current = recognition;
-      recognition.continuous      = true;
-      recognition.interimResults  = true;
-      recognition.lang            = 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
 
       recognition.onresult = (event) => {
         let interim = '';
-        let final   = '';
+        let final = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             final += event.results[i][0].transcript;
@@ -152,7 +158,9 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
 
       recognition.onerror = (event) => {
         if (event.error === 'not-allowed') {
-          setError('Microphone access was denied. Please allow microphone access in your browser settings.');
+          setError(
+            'Microphone access was denied. Please allow microphone access in your browser settings.',
+          );
         } else if (event.error === 'no-speech') {
           setError('No speech detected. Please make sure your microphone is working.');
         } else {
@@ -172,7 +180,9 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
       {/* TTS section */}
       <div className="pb-4 border-b border-slate-200 mb-4">
         <h3 className="text-lg font-bold text-slate-800">Hear it First</h3>
-        <p className="text-sm text-slate-500 mt-0.5 mb-3">Type a word or sentence to hear how it&apos;s pronounced.</p>
+        <p className="text-sm text-slate-500 mt-0.5 mb-3">
+          Type a word or sentence to hear how it&apos;s pronounced.
+        </p>
         <div className="flex gap-2">
           <div className="relative flex-grow">
             <input
@@ -210,25 +220,27 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
       {/* Practice section */}
       <div>
         <h2 className="text-xl font-bold text-slate-800">Pronunciation Practice</h2>
-        <p className="text-sm text-slate-500 mt-0.5 mb-4">Click the mic and read the text below aloud.</p>
+        <p className="text-sm text-slate-500 mt-0.5 mb-4">
+          Click the mic and read the text below aloud.
+        </p>
 
         {/* Story text with scored colouring */}
         <div
           className="p-5 bg-brand-50 rounded-xl text-xl sm:text-2xl leading-relaxed tracking-wide border-2 border-dashed border-slate-300 mb-4"
           aria-label="Text to read aloud"
         >
-          {wordScores ? (
-            wordScores.map((info, idx) => (
-              <span key={idx}>
-                <span className={`rounded-md px-1 py-0.5 transition-colors duration-300 ${getColorForScore(info.score)}`}>
-                  {info.word}
+          {wordScores
+            ? wordScores.map((info, idx) => (
+                <span key={idx}>
+                  <span
+                    className={`rounded-md px-1 py-0.5 transition-colors duration-300 ${getColorForScore(info.score)}`}
+                  >
+                    {info.word}
+                  </span>
+                  {idx < wordScores.length - 1 ? ' ' : ''}
                 </span>
-                {idx < wordScores.length - 1 ? ' ' : ''}
-              </span>
-            ))
-          ) : (
-            text
-          )}
+              ))
+            : text}
         </div>
 
         {/* Controls */}
@@ -238,7 +250,11 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
               <div className="text-sm text-red-600 bg-red-50 p-3 rounded-xl w-full">
                 <strong>Oops!</strong> {error}
               </div>
-              <button onClick={handleListen} className="btn-primary flex-shrink-0" id="pronounce-retry-btn">
+              <button
+                onClick={handleListen}
+                className="btn-primary flex-shrink-0"
+                id="pronounce-retry-btn"
+              >
                 <RestartIcon />
                 Try Again
               </button>
@@ -254,14 +270,23 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
                 <MicIcon />
                 <span>{isListening ? 'Stop & See Score' : 'Start Listening'}</span>
               </button>
-              <button onClick={reset} disabled={isSpeaking} className="btn-ghost" id="pronounce-reset-btn">
+              <button
+                onClick={reset}
+                disabled={isSpeaking}
+                className="btn-ghost"
+                id="pronounce-reset-btn"
+              >
                 <RestartIcon />
                 Reset
               </button>
               {score !== null && (
                 <div className="ml-auto text-center sm:text-right">
-                  <div className="text-xs text-slate-500 uppercase tracking-wide">Overall Score</div>
-                  <div className={`text-3xl font-extrabold ${score > 80 ? 'text-green-600' : 'text-slate-700'}`}>
+                  <div className="text-xs text-slate-500 uppercase tracking-wide">
+                    Overall Score
+                  </div>
+                  <div
+                    className={`text-3xl font-extrabold ${score > 80 ? 'text-green-600' : 'text-slate-700'}`}
+                  >
                     {score}%
                   </div>
                 </div>
@@ -284,7 +309,8 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
         {/* Browser unsupported warning */}
         {!isSpeechRecognitionSupported && !error && (
           <div className="mt-4 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 p-3 rounded-xl">
-            ⚠️ Speech recognition is not supported in your browser. Please try Chrome or Edge for this feature.
+            ⚠️ Speech recognition is not supported in your browser. Please try Chrome or Edge for
+            this feature.
           </div>
         )}
       </div>

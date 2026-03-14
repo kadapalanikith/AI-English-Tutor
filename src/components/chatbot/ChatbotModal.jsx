@@ -33,7 +33,7 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
   return (
     // Backdrop
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-end sm:items-center p-4"
+      className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex justify-center items-end sm:items-center p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -41,13 +41,15 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
     >
       {/* Panel */}
       <div
-        className="bg-slate-50 rounded-2xl w-full max-w-lg h-[70vh] flex flex-col shadow-2xl animate-slide-up"
+        className="bg-white/95 backdrop-blur-xl border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-lg h-[80vh] sm:h-[75vh] flex flex-col shadow-2xl animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <header className="p-4 border-b border-slate-200 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm">🤖</div>
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm">
+              🤖
+            </div>
             <div>
               <h2 className="text-base font-bold text-slate-800 leading-none">LiftBot Assistant</h2>
               <p className="text-xs text-brand-600 font-medium">AI English Tutor</p>
@@ -67,7 +69,10 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
           {chatHistory.length === 0 && (
             <div className="text-center text-slate-400 text-sm mt-8">
               <div className="text-4xl mb-3">👋</div>
-              <p>Hi! I&apos;m LiftBot. Ask me anything about English grammar, vocabulary, or how to use this app!</p>
+              <p>
+                Hi! I&apos;m LiftBot. Ask me anything about English grammar, vocabulary, or how to
+                use this app!
+              </p>
             </div>
           )}
           {chatHistory.map((msg, index) => (
@@ -84,9 +89,18 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
           ))}
           {isBotTyping && (
             <div className="bg-white border border-slate-200 self-start rounded-bl-md p-3 rounded-2xl shadow-sm flex gap-1 items-center">
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span
+                className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                style={{ animationDelay: '0ms' }}
+              />
+              <span
+                className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                style={{ animationDelay: '150ms' }}
+              />
+              <span
+                className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                style={{ animationDelay: '300ms' }}
+              />
             </div>
           )}
           <div ref={messagesEndRef} />

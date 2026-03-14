@@ -26,9 +26,12 @@ const LearnSection = ({ story, lang, dictionary, fetchNewStory, isLoading, loadi
   }, [story.id]);
 
   // Clean up on unmount
-  useEffect(() => () => {
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
-  }, []);
+  useEffect(
+    () => () => {
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    },
+    [],
+  );
 
   const handlePlayPauseResume = () => {
     if (typeof window.speechSynthesis === 'undefined') return;
@@ -43,11 +46,14 @@ const LearnSection = ({ story, lang, dictionary, fetchNewStory, isLoading, loadi
       try {
         const utterance = new SpeechSynthesisUtterance(story.text);
         utterance.lang = 'en-US';
-        utterance.onstart  = () => setSpeechStatus('playing');
-        utterance.onpause  = () => setSpeechStatus('paused');
+        utterance.onstart = () => setSpeechStatus('playing');
+        utterance.onpause = () => setSpeechStatus('paused');
         utterance.onresume = () => setSpeechStatus('playing');
-        utterance.onend    = () => { setSpeechStatus('idle'); utteranceRef.current = null; };
-        utterance.onerror  = (e) => {
+        utterance.onend = () => {
+          setSpeechStatus('idle');
+          utteranceRef.current = null;
+        };
+        utterance.onerror = (e) => {
           if (e.error !== 'interrupted') console.error('TTS error:', e.error);
           setSpeechStatus('idle');
           utteranceRef.current = null;
@@ -84,11 +90,23 @@ const LearnSection = ({ story, lang, dictionary, fetchNewStory, isLoading, loadi
           <button
             className="btn-primary"
             onClick={handlePlayPauseResume}
-            aria-label={speechStatus === 'playing' ? 'Pause narration' : speechStatus === 'paused' ? 'Resume narration' : 'Listen to story'}
+            aria-label={
+              speechStatus === 'playing'
+                ? 'Pause narration'
+                : speechStatus === 'paused'
+                  ? 'Resume narration'
+                  : 'Listen to story'
+            }
             id="learn-listen-btn"
           >
             {speechStatus === 'playing' ? <PauseIcon /> : <PlayIcon />}
-            <span>{speechStatus === 'playing' ? 'Pause' : speechStatus === 'paused' ? 'Resume' : 'Listen'}</span>
+            <span>
+              {speechStatus === 'playing'
+                ? 'Pause'
+                : speechStatus === 'paused'
+                  ? 'Resume'
+                  : 'Listen'}
+            </span>
           </button>
 
           {(speechStatus === 'playing' || speechStatus === 'paused') && (
@@ -118,7 +136,7 @@ const LearnSection = ({ story, lang, dictionary, fetchNewStory, isLoading, loadi
       </div>
 
       {/* Story text */}
-      <div className="text-xl sm:text-2xl leading-relaxed text-slate-700 select-none">
+      <div className="text-xl sm:text-2xl leading-[1.8] sm:leading-[1.9] tracking-wide text-slate-700 select-none">
         {tokenizeWithSpaces(story.text).map((token, idx) =>
           token.trim() === '' ? (
             <span key={idx}>{token}</span>

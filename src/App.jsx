@@ -1,25 +1,25 @@
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 
-import RootLayout            from './layouts/RootLayout';
-import Notification           from './components/ui/Notification';
-import OnboardingModal        from './components/onboarding/OnboardingModal';
-import ProfileModal           from './components/profile/ProfileModal';
-import ChatbotFab             from './components/chatbot/ChatbotFab';
-import ChatbotModal           from './components/chatbot/ChatbotModal';
+import RootLayout from './layouts/RootLayout';
+import Notification from './components/ui/Notification';
+import OnboardingModal from './components/onboarding/OnboardingModal';
+import ProfileModal from './components/profile/ProfileModal';
+import ChatbotFab from './components/chatbot/ChatbotFab';
+import ChatbotModal from './components/chatbot/ChatbotModal';
 
-import useLocalStorage        from './hooks/useLocalStorage';
-import { useGoals }           from './hooks/useGoals';
-import { useProgress }        from './hooks/useProgress';
+import useLocalStorage from './hooks/useLocalStorage';
+import { useGoals } from './hooks/useGoals';
+import { useProgress } from './hooks/useProgress';
 import { initialStory, initialDictionary } from './data/initialData';
-import * as geminiService     from './services/geminiService';
+import * as geminiService from './services/geminiService';
 
 // ── Lazy-loaded pages ──────────────────────────────────────────────────────────
-const HomePage     = lazy(() => import('./pages/HomePage'));
-const LearnPage    = lazy(() => import('./pages/LearnPage'));
-const TypePage     = lazy(() => import('./pages/TypePage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
+const LearnPage = lazy(() => import('./pages/LearnPage'));
+const TypePage = lazy(() => import('./pages/TypePage'));
 const PronouncePage = lazy(() => import('./pages/PronouncePage'));
-const HelpPage     = lazy(() => import('./pages/HelpPage'));
+const HelpPage = lazy(() => import('./pages/HelpPage'));
 
 // ── Simple page loader ─────────────────────────────────────────────────────────
 const PageLoader = () => (
@@ -39,22 +39,25 @@ const PageLoader = () => (
 // ──────────────────────────────────────────────────────────────────────────────
 function App() {
   // ── Persistent state ──
-  const [stories,            setStories]            = useLocalStorage('eec_stories', [initialStory]);
-  const [dictionary,         setDictionary]         = useLocalStorage('eec_dictionary', initialDictionary);
-  const [lang,               setLang]               = useLocalStorage('eec_lang', 'hi');
-  const [onboardingComplete, setOnboardingComplete] = useLocalStorage('eec_onboarding_complete', false);
-  const [userName,           setUserName]           = useLocalStorage('eec_user_name', '');
-  const [englishLevel,       setEnglishLevel]       = useLocalStorage('eec_english_level', 'beginner');
-  const [chatHistory,        setChatHistory]        = useLocalStorage('eec_chat_history', []);
+  const [stories, setStories] = useLocalStorage('eec_stories', [initialStory]);
+  const [dictionary, setDictionary] = useLocalStorage('eec_dictionary', initialDictionary);
+  const [lang, setLang] = useLocalStorage('eec_lang', 'hi');
+  const [onboardingComplete, setOnboardingComplete] = useLocalStorage(
+    'eec_onboarding_complete',
+    false,
+  );
+  const [userName, setUserName] = useLocalStorage('eec_user_name', '');
+  const [englishLevel, setEnglishLevel] = useLocalStorage('eec_english_level', 'beginner');
+  const [chatHistory, setChatHistory] = useLocalStorage('eec_chat_history', []);
 
   // ── Ephemeral state ──
   const [personalizedExercise, setPersonalizedExercise] = useState(null);
-  const [isLoading,     setIsLoading]     = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [error,         setError]         = useState(null);
-  const [isProfileOpen, setProfileOpen]   = useState(false);
-  const [isChatOpen,    setChatOpen]      = useState(false);
-  const [isBotTyping,   setIsBotTyping]   = useState(false);
+  const [error, setError] = useState(null);
+  const [isProfileOpen, setProfileOpen] = useState(false);
+  const [isChatOpen, setChatOpen] = useState(false);
+  const [isBotTyping, setIsBotTyping] = useState(false);
 
   // ── Hooks ──
   const goalsManager = useGoals();
@@ -64,7 +67,9 @@ function App() {
 
   // ── Scroll to top on navigation ──
   const location = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   // ── Story generation ──
   const fetchNewStory = useCallback(async () => {
@@ -76,7 +81,8 @@ function App() {
     try {
       setLoadingProgress(25);
       const newStoryContent = await geminiService.generateNewStory(englishLevel);
-      if (!newStoryContent.title || !newStoryContent.text) throw new Error('Invalid story content returned from API.');
+      if (!newStoryContent.title || !newStoryContent.text)
+        throw new Error('Invalid story content returned from API.');
 
       setLoadingProgress(50);
       const newTranslations = await geminiService.translateText(newStoryContent.text);
@@ -107,43 +113,61 @@ function App() {
   }, [englishLevel, setDictionary, setStories]);
 
   // ── Session complete handlers ──
-  const handleTypingComplete = useCallback(async (summary) => {
-    addRecord({ ...summary, type: 'typing', ts: Date.now() });
-    goalsManager.incrementGoal('type50', summary.typedChars);
-    if (summary.incorrectWords.length > 0) {
-      const exercise = await geminiService.generatePersonalizedExercise('typing', summary.incorrectWords);
-      setPersonalizedExercise(exercise);
-    } else {
-      setPersonalizedExercise(null);
-    }
-  }, [addRecord, goalsManager]);
+  const handleTypingComplete = useCallback(
+    async (summary) => {
+      addRecord({ ...summary, type: 'typing', ts: Date.now() });
+      goalsManager.incrementGoal('type50', summary.typedChars);
+      if (summary.incorrectWords.length > 0) {
+        const exercise = await geminiService.generatePersonalizedExercise(
+          'typing',
+          summary.incorrectWords,
+        );
+        setPersonalizedExercise(exercise);
+      } else {
+        setPersonalizedExercise(null);
+      }
+    },
+    [addRecord, goalsManager],
+  );
 
-  const handlePronounceComplete = useCallback(async (summary) => {
-    addRecord({ ...summary, type: 'pronounce', ts: Date.now() });
-    goalsManager.incrementGoal('pron10');
-    if (summary.incorrectWords.length > 0) {
-      const exercise = await geminiService.generatePersonalizedExercise('pronunciation', summary.incorrectWords);
-      setPersonalizedExercise(exercise);
-    } else {
-      setPersonalizedExercise(null);
-    }
-  }, [addRecord, goalsManager]);
+  const handlePronounceComplete = useCallback(
+    async (summary) => {
+      addRecord({ ...summary, type: 'pronounce', ts: Date.now() });
+      goalsManager.incrementGoal('pron10');
+      if (summary.incorrectWords.length > 0) {
+        const exercise = await geminiService.generatePersonalizedExercise(
+          'pronunciation',
+          summary.incorrectWords,
+        );
+        setPersonalizedExercise(exercise);
+      } else {
+        setPersonalizedExercise(null);
+      }
+    },
+    [addRecord, goalsManager],
+  );
 
   // ── Chatbot ──
-  const handleSendMessage = useCallback(async (message) => {
-    const userHistory = [...chatHistory, { role: 'user', text: message }];
-    setChatHistory(userHistory);
-    setIsBotTyping(true);
-    try {
-      const response = await geminiService.getChatbotResponse(userHistory.slice(-10), message);
-      setChatHistory([...userHistory, { role: 'bot', text: response }]);
-    } catch (e) {
-      console.error('[App] chatbot error:', e);
-      setChatHistory([...userHistory, { role: 'bot', text: "Sorry, I'm having trouble connecting. Please try again." }]);
-    } finally {
-      setIsBotTyping(false);
-    }
-  }, [chatHistory, setChatHistory]);
+  const handleSendMessage = useCallback(
+    async (message) => {
+      const userHistory = [...chatHistory, { role: 'user', text: message }];
+      setChatHistory(userHistory);
+      setIsBotTyping(true);
+      try {
+        const response = await geminiService.getChatbotResponse(userHistory.slice(-10), message);
+        setChatHistory([...userHistory, { role: 'bot', text: response }]);
+      } catch (e) {
+        console.error('[App] chatbot error:', e);
+        setChatHistory([
+          ...userHistory,
+          { role: 'bot', text: "Sorry, I'm having trouble connecting. Please try again." },
+        ]);
+      } finally {
+        setIsBotTyping(false);
+      }
+    },
+    [chatHistory, setChatHistory],
+  );
 
   // ── Goal completion percentage ──
   const completionPercentage = useMemo(() => {
@@ -171,38 +195,44 @@ function App() {
       <RootLayout userName={userName} onProfileOpen={() => setProfileOpen(true)}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            <Route path="/"         element={<HomePage />} />
-            <Route path="/learn"    element={
-              <LearnPage
-                {...storyPageProps}
-                lang={lang}
-                dictionary={dictionary}
-                fetchNewStory={fetchNewStory}
-                isLoading={isLoading}
-                loadingProgress={loadingProgress}
-              />
-            } />
-            <Route path="/type"     element={
-              <TypePage
-                {...storyPageProps}
-                onSessionComplete={handleTypingComplete}
-              />
-            } />
-            <Route path="/pronounce" element={
-              <PronouncePage
-                {...storyPageProps}
-                onSessionComplete={handlePronounceComplete}
-              />
-            } />
-            <Route path="/help"     element={<HelpPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/learn"
+              element={
+                <LearnPage
+                  {...storyPageProps}
+                  lang={lang}
+                  dictionary={dictionary}
+                  fetchNewStory={fetchNewStory}
+                  isLoading={isLoading}
+                  loadingProgress={loadingProgress}
+                />
+              }
+            />
+            <Route
+              path="/type"
+              element={<TypePage {...storyPageProps} onSessionComplete={handleTypingComplete} />}
+            />
+            <Route
+              path="/pronounce"
+              element={
+                <PronouncePage {...storyPageProps} onSessionComplete={handlePronounceComplete} />
+              }
+            />
+            <Route path="/help" element={<HelpPage />} />
             {/* 404 fallback */}
-            <Route path="*" element={
-              <div className="text-center py-24">
-                <div className="text-6xl mb-4">😕</div>
-                <h1 className="text-2xl font-bold text-slate-800 mb-2">Page Not Found</h1>
-                <Link to="/" className="btn-primary inline-flex mt-4">Go Home</Link>
-              </div>
-            } />
+            <Route
+              path="*"
+              element={
+                <div className="text-center py-24">
+                  <div className="text-6xl mb-4">😕</div>
+                  <h1 className="text-2xl font-bold text-slate-800 mb-2">Page Not Found</h1>
+                  <Link to="/" className="btn-primary inline-flex mt-4">
+                    Go Home
+                  </Link>
+                </div>
+              }
+            />
           </Routes>
         </Suspense>
       </RootLayout>

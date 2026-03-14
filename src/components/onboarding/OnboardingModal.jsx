@@ -1,10 +1,30 @@
 import { useState } from 'react';
 
 const tourSteps = [
-  { icon: '📖', title: 'Learn Stories',         description: 'Read AI-generated stories from Indian epics. Long-press any word to see its translation in your native language.' },
-  { icon: '⌨️', title: 'Practice Typing',        description: 'Improve your typing speed and accuracy by typing the stories you read. Get real-time WPM and accuracy stats.' },
-  { icon: '🔊', title: 'Practice Pronunciation', description: 'Read the stories aloud and get instant AI feedback on your pronunciation, word by word.' },
-  { icon: '🤖', title: 'Meet LiftBot',           description: 'Have any doubts? Ask your personal AI English tutor any question about grammar, vocabulary, or the app.' },
+  {
+    icon: '📖',
+    title: 'Learn Stories',
+    description:
+      'Read AI-generated stories from Indian epics. Long-press any word to see its translation in your native language.',
+  },
+  {
+    icon: '⌨️',
+    title: 'Practice Typing',
+    description:
+      'Improve your typing speed and accuracy by typing the stories you read. Get real-time WPM and accuracy stats.',
+  },
+  {
+    icon: '🔊',
+    title: 'Practice Pronunciation',
+    description:
+      'Read the stories aloud and get instant AI feedback on your pronunciation, word by word.',
+  },
+  {
+    icon: '🤖',
+    title: 'Meet LiftBot',
+    description:
+      'Have any doubts? Ask your personal AI English tutor any question about grammar, vocabulary, or the app.',
+  },
 ];
 
 /**
@@ -34,7 +54,9 @@ const OnboardingModal = ({ onComplete, setLang }) => {
           <div>
             <div className="text-5xl mb-4">🚀</div>
             <h1 className="text-2xl font-bold text-slate-800 mb-2">Welcome to AI English Tutor!</h1>
-            <p className="text-slate-500 mb-6">To personalise your experience, please select your mother tongue.</p>
+            <p className="text-slate-500 mb-6">
+              To personalise your experience, please select your mother tongue.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 className="btn-primary py-4 text-base rounded-xl flex-1 justify-center"
@@ -72,11 +94,19 @@ const OnboardingModal = ({ onComplete, setLang }) => {
             </div>
 
             {isLastStep ? (
-              <button className="btn-primary py-3 px-8 text-base rounded-xl" onClick={onComplete} id="onboard-start">
+              <button
+                className="btn-primary py-3 px-8 text-base rounded-xl"
+                onClick={onComplete}
+                id="onboard-start"
+              >
                 Start Learning! 🎉
               </button>
             ) : (
-              <button className="btn-primary py-3 px-8 text-base rounded-xl" onClick={() => setStep((s) => s + 1)} id="onboard-next">
+              <button
+                className="btn-primary py-3 px-8 text-base rounded-xl"
+                onClick={() => setStep((s) => s + 1)}
+                id="onboard-next"
+              >
                 Next →
               </button>
             )}

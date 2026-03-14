@@ -16,9 +16,18 @@ import { CloseIcon } from '../ui/Icons';
  * }} props
  */
 const ProfileModal = ({
-  isOpen, onClose, streak, records, goals,
-  lang, setLang, completionPercentage,
-  userName, setUserName, englishLevel, setEnglishLevel,
+  isOpen,
+  onClose,
+  streak,
+  records,
+  goals,
+  lang,
+  setLang,
+  completionPercentage,
+  userName,
+  setUserName,
+  englishLevel,
+  setEnglishLevel,
 }) => {
   const wpmSeries = useMemo(
     () => records.filter((r) => r.type === 'typing').map((r) => r.wpm),
@@ -33,14 +42,14 @@ const ProfileModal = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4"
+      className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex justify-center items-center p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="User profile"
     >
       <div
-        className="bg-slate-50 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up"
+        className="bg-white/95 backdrop-blur-xl border border-white/50 rounded-3xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top bar */}
@@ -56,7 +65,11 @@ const ProfileModal = ({
               aria-label="Your name"
             />
           </div>
-          <button className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg mt-1" onClick={onClose} aria-label="Close profile">
+          <button
+            className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg mt-1"
+            onClick={onClose}
+            aria-label="Close profile"
+          >
             <CloseIcon />
           </button>
         </div>
@@ -93,16 +106,25 @@ const ProfileModal = ({
             <div className="space-y-2">
               {goals.map((g) => (
                 <div key={g.id} className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${g.done ? 'border-brand-500 bg-brand-500' : 'border-slate-300'}`}>
+                  <div
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${g.done ? 'border-brand-500 bg-brand-500' : 'border-slate-300'}`}
+                  >
                     {g.done && <span className="text-white text-xs">✓</span>}
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between text-sm">
-                      <span className={g.done ? 'text-brand-700 font-medium' : 'text-slate-600'}>{g.label}</span>
-                      <span className="text-slate-400">{g.progress}/{g.target}</span>
+                      <span className={g.done ? 'text-brand-700 font-medium' : 'text-slate-600'}>
+                        {g.label}
+                      </span>
+                      <span className="text-slate-400">
+                        {g.progress}/{g.target}
+                      </span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1">
-                      <div className="bg-brand-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${Math.min(100, (g.progress / g.target) * 100)}%` }} />
+                      <div
+                        className="bg-brand-500 h-1.5 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min(100, (g.progress / g.target) * 100)}%` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -116,7 +138,9 @@ const ProfileModal = ({
           <h3 className="text-base font-bold text-slate-700 mb-3">Performance Trends</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <Card>
-              <div className="text-sm font-medium text-slate-500 mb-2">WPM Trend (Last {wpmSeries.length})</div>
+              <div className="text-sm font-medium text-slate-500 mb-2">
+                WPM Trend (Last {wpmSeries.length})
+              </div>
               <SparklineChart values={wpmSeries} />
             </Card>
             <Card>
@@ -132,7 +156,12 @@ const ProfileModal = ({
           <Card>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-slate-600 block mb-1" htmlFor="english-level-select">English Level</label>
+                <label
+                  className="text-sm font-medium text-slate-600 block mb-1"
+                  htmlFor="english-level-select"
+                >
+                  English Level
+                </label>
                 <select
                   id="english-level-select"
                   value={englishLevel}
@@ -145,7 +174,12 @@ const ProfileModal = ({
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-600 block mb-1" htmlFor="native-lang-select">Native Language</label>
+                <label
+                  className="text-sm font-medium text-slate-600 block mb-1"
+                  htmlFor="native-lang-select"
+                >
+                  Native Language
+                </label>
                 <select
                   id="native-lang-select"
                   value={lang}

@@ -8,7 +8,7 @@ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 if (!API_KEY) {
   console.error(
     '[geminiService] No API key found. ' +
-    'Create a .env file and set VITE_GEMINI_API_KEY=your_key_here',
+      'Create a .env file and set VITE_GEMINI_API_KEY=your_key_here',
   );
 }
 
@@ -19,7 +19,7 @@ const storySchema = {
   type: Type.OBJECT,
   properties: {
     title: { type: Type.STRING },
-    text:  { type: Type.STRING },
+    text: { type: Type.STRING },
   },
   required: ['title', 'text'],
 };
