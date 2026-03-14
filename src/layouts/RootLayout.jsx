@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ProfileIcon, LearnIcon, TypeIcon, PronounceIcon } from '../components/ui/Icons';
+import { ProfileIcon, LearnIcon, TypeIcon, PronounceIcon, QuizIcon } from '../components/ui/Icons';
 import { playPopSound } from '../utils/audio';
+import { useTranslation } from '../utils/i18n';
 
 // Proper house-shaped home icon for the mobile nav
 const NavHomeIcon = () => (
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { path: '/learn', label: 'Learn', Icon: LearnIcon },
   { path: '/type', label: 'Type', Icon: TypeIcon },
   { path: '/pronounce', label: 'Pronounce', Icon: PronounceIcon },
+  { path: '/quiz', label: 'Quiz', Icon: QuizIcon },
 ];
 
 const MOBILE_ITEMS = [{ path: '/', label: 'Home', Icon: NavHomeIcon }, ...NAV_ITEMS];
@@ -33,11 +35,13 @@ const MOBILE_ITEMS = [{ path: '/', label: 'Home', Icon: NavHomeIcon }, ...NAV_IT
  * @param {{
  *   children: React.ReactNode;
  *   userName: string;
+ *   lang: string;
  *   onProfileOpen: () => void;
  * }} props
  */
-const RootLayout = ({ children, userName, onProfileOpen }) => {
+const RootLayout = ({ children, userName, lang, onProfileOpen }) => {
   const { pathname } = useLocation();
+  const t = useTranslation(lang);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-20 md:pb-0">
@@ -52,7 +56,7 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
             id="header-logo"
           >
             <span className="text-2xl">🚀</span>
-            <span className="text-xl font-extrabold tracking-tight">AI English Tutor</span>
+            <span className="text-xl font-extrabold tracking-tight">{t('AI English Tutor')}</span>
           </Link>
 
           {/* Desktop nav */}
@@ -71,7 +75,7 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
                   onClick={() => !active && playPopSound()}
                 >
                   <Icon />
-                  <span>{label}</span>
+                  <span>{t(label)}</span>
                 </Link>
               );
             })}
@@ -88,7 +92,7 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
             id="header-profile-btn"
           >
             <span className="hidden sm:inline text-sm font-semibold">
-              {userName || 'My Profile'}
+              {userName || t('My Profile')}
             </span>
             <ProfileIcon />
           </button>
@@ -121,7 +125,7 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
                 }`}
               >
                 <Icon />
-                <span>{label}</span>
+                <span>{t(label)}</span>
               </Link>
             );
           })}

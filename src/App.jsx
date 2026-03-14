@@ -22,6 +22,7 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const LearnPage = lazy(() => import('./pages/LearnPage'));
 const TypePage = lazy(() => import('./pages/TypePage'));
 const PronouncePage = lazy(() => import('./pages/PronouncePage'));
+const QuizPage = lazy(() => import('./pages/QuizPage'));
 const HelpPage = lazy(() => import('./pages/HelpPage'));
 
 // ── Simple page loader ─────────────────────────────────────────────────────────
@@ -75,45 +76,50 @@ function App() {
   }, [location.pathname]);
 
   // ── Story generation ──
-  const fetchNewStory = useCallback(async () => {
-    setIsLoading(true);
-    setLoadingProgress(0);
-    setError(null);
-    setPersonalizedExercise(null);
+  const fetchNewStory = useCallback(
+    async (topic = 'Indian epics, the Ramayana or Mahabharata') => {
+      setIsLoading(true);
+      setLoadingProgress(0);
+      setError(null);
+      setPersonalizedExercise(null);
 
-    try {
-      setLoadingProgress(25);
-      const newStoryContent = await geminiService.generateNewStory(englishLevel);
-      if (!newStoryContent.title || !newStoryContent.text)
-        throw new Error('Invalid story content returned from API.');
+      try {
+        setLoadingProgress(25);
+        const newStoryContent = await geminiService.generateNewStory(englishLevel, topic);
+        if (!newStoryContent.title || !newStoryContent.text)
+          throw new Error('Invalid story content returned from API.');
 
-      setLoadingProgress(50);
-      const newTranslations = await geminiService.translateText(newStoryContent.text);
+        setLoadingProgress(50);
+        const newTranslations = await geminiService.translateText(newStoryContent.text);
 
-      setLoadingProgress(75);
-      const words = Array.from(new Set(newStoryContent.text.toLowerCase().match(/\b\w+\b/g) || []));
-      const newDictionaryEntries = await geminiService.translateWords(words);
+        setLoadingProgress(75);
+        const words = Array.from(
+          new Set(newStoryContent.text.toLowerCase().match(/\b\w+\b/g) || []),
+        );
+        const newDictionaryEntries = await geminiService.translateWords(words);
 
-      const newStory = {
-        id: `story_${Date.now()}`,
-        title: newStoryContent.title,
-        text: newStoryContent.text,
-        translations: newTranslations,
-      };
+        const newStory = {
+          id: `story_${Date.now()}`,
+          title: newStoryContent.title,
+          text: newStoryContent.text,
+          translations: newTranslations,
+        };
 
-      setStories([newStory]);
-      setDictionary((prev) => ({
-        hi: { ...prev.hi, ...newDictionaryEntries.hi },
-        te: { ...prev.te, ...newDictionaryEntries.te },
-      }));
-      setLoadingProgress(100);
-    } catch (e) {
-      console.error('[App] fetchNewStory error:', e);
-      setError('Failed to generate a new story. Please check your API key and try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [englishLevel, setDictionary, setStories]);
+        setStories([newStory]);
+        setDictionary((prev) => ({
+          hi: { ...prev.hi, ...newDictionaryEntries.hi },
+          te: { ...prev.te, ...newDictionaryEntries.te },
+        }));
+        setLoadingProgress(100);
+      } catch (e) {
+        console.error('[App] fetchNewStory error:', e);
+        setError('Failed to generate a new story. Please check your API key and try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [englishLevel, setDictionary, setStories],
+  );
 
   // ── Session complete handlers ──
   const handleTypingComplete = useCallback(
@@ -197,7 +203,7 @@ function App() {
       <Notification message={error} onClose={() => setError(null)} />
 
       {/* App shell */}
-      <RootLayout userName={userName} onProfileOpen={() => setProfileOpen(true)}>
+      <RootLayout userName={userName} lang={lang} onProfileOpen={() => setProfileOpen(true)}>
         <Suspense fallback={<PageLoader />}>
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
@@ -205,7 +211,7 @@ function App() {
                 path="/"
                 element={
                   <PageTransition>
-                    <HomePage />
+                    <HomePage lang={lang} />
                   </PageTransition>
                 }
               />
@@ -248,6 +254,14 @@ function App() {
                 element={
                   <PageTransition>
                     <HelpPage />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/quiz"
+                element={
+                  <PageTransition>
+                    <QuizPage englishLevel={englishLevel} />
                   </PageTransition>
                 }
               />

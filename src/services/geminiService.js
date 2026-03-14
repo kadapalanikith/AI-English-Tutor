@@ -24,6 +24,20 @@ const storySchema = {
   required: ['title', 'text'],
 };
 
+const quizSchema = {
+  type: Type.ARRAY,
+  items: {
+    type: Type.OBJECT,
+    properties: {
+      question: { type: Type.STRING },
+      options: { type: Type.ARRAY, items: { type: Type.STRING } },
+      answer: { type: Type.STRING },
+      explanation: { type: Type.STRING },
+    },
+    required: ['question', 'options', 'answer', 'explanation'],
+  },
+};
+
 const textTranslationSchema = {
   type: Type.OBJECT,
   properties: {
@@ -39,16 +53,32 @@ const MODEL = 'gemini-2.5-flash';
 // ─── Exports ───────────────────────────────────────────────────────────────────
 
 /**
- * Generates a new AI story at the given English level.
+ * Generates a new AI story.
  * @param {string} englishLevel
- * @returns {Promise<Partial<import('../types').Story>>}
+ * @param {string} topic optional topic or genre
  */
-export async function generateNewStory(englishLevel) {
-  const prompt = `Generate a short moral story of about 6 to 8 sentences from the Indian epics, the Ramayana or Mahabharata, for an adult learning English at a ${englishLevel} level. The story should be easy to understand and contain a clear lesson.`;
+export async function generateNewStory(
+  englishLevel,
+  topic = 'Indian epics, the Ramayana or Mahabharata',
+) {
+  const prompt = `Generate a short moral story of about 6 to 8 sentences about ${topic} for an adult learning English at a ${englishLevel} level. The story should be easy to understand and contain a clear lesson.`;
   const response = await ai.models.generateContent({
     model: MODEL,
     contents: prompt,
     config: { responseMimeType: 'application/json', responseSchema: storySchema },
+  });
+  return JSON.parse(response.text);
+}
+
+/**
+ * Generates a 5-question grammar/vocabulary quiz based on the user's level and recent topics.
+ */
+export async function generateGrammarQuiz(englishLevel) {
+  const prompt = `Create a 5-question multiple-choice quiz covering grammar and vocabulary for a ${englishLevel} level ESL learner. Make the questions relevant to daily conversations, storytelling, and common mistakes. Provide 4 options, the exact correct answer text, and a short explanation for each question.`;
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: prompt,
+    config: { responseMimeType: 'application/json', responseSchema: quizSchema },
   });
   return JSON.parse(response.text);
 }

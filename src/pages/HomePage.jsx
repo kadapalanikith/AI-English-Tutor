@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../utils/i18n';
 
 const features = [
   {
@@ -26,6 +27,14 @@ const features = [
     id: 'home-pronounce-btn',
   },
   {
+    icon: '🧠',
+    title: 'Quiz',
+    description: 'Test your grammar and vocabulary in a daily battle.',
+    path: '/quiz',
+    color: 'from-rose-500 to-rose-600',
+    id: 'home-quiz-btn',
+  },
+  {
     icon: '❓',
     title: 'Help',
     description: 'Learn how to use all the features of this app.',
@@ -35,16 +44,27 @@ const features = [
   },
 ];
 
-const HomePage = () => {
+const HomePage = ({ lang }) => {
   const navigate = useNavigate();
+  const t = useTranslation(lang);
 
   return (
     <div className="flex flex-col gap-6 max-w-xl mx-auto mt-10">
       <div className="text-center mb-2">
         <h1 className="text-3xl font-extrabold text-slate-800 mb-1">
-          What do you want to practise?
+          {lang === 'hi'
+            ? 'आप क्या अभ्यास करना चाहते हैं?'
+            : lang === 'te'
+              ? 'మీరు ఏమి అభ్యసించాలనుకుంటున్నారు?'
+              : 'What do you want to practise?'}
         </h1>
-        <p className="text-slate-500">Choose a mode to get started with AI-powered learning.</p>
+        <p className="text-slate-500">
+          {lang === 'hi'
+            ? 'एआई-संचालित शिक्षण के साथ शुरुआत करें।'
+            : lang === 'te'
+              ? 'ఏఐ తో నేర్చుకోవడం ప్రారంభించండి.'
+              : 'Choose a mode to get started with AI.'}
+        </p>
       </div>
 
       {features.map((f) => (
@@ -62,9 +82,9 @@ const HomePage = () => {
           </div>
           <div>
             <div className="text-lg font-bold text-slate-800 group-hover:text-brand-600 transition-colors">
-              {f.title}
+              {t(f.title)}
             </div>
-            <div className="text-sm font-normal text-slate-500 mt-0.5">{f.description}</div>
+            <div className="text-sm font-normal text-slate-500 mt-0.5">{t(f.description)}</div>
           </div>
           <div className="ml-auto text-slate-300 group-hover:text-brand-400 transition-colors">
             <svg

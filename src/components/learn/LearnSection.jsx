@@ -16,6 +16,7 @@ import { PlayIcon, PauseIcon, StopIcon, RestartIcon } from '../ui/Icons';
  */
 const LearnSection = ({ story, lang, dictionary, fetchNewStory, isLoading, loadingProgress }) => {
   const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle' | 'playing' | 'paused'
+  const [topic, setTopic] = useState('Indian epics, the Ramayana or Mahabharata');
   const utteranceRef = useRef(null);
 
   // Stop speech when story changes
@@ -133,6 +134,51 @@ const LearnSection = ({ story, lang, dictionary, fetchNewStory, isLoading, loadi
             )}
           </button>
         </div>
+      </div>
+
+      {/* Topic Selection */}
+      <div className="mb-6 flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <label
+          htmlFor="topic-select"
+          className="text-sm font-semibold text-slate-600 whitespace-nowrap"
+        >
+          Topic:
+        </label>
+        <select
+          id="topic-select"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          className="bg-white border text-sm border-slate-300 text-slate-700 rounded-lg focus:ring-brand-500 focus:border-brand-500 block w-full p-2 outline-none"
+        >
+          <option value="Indian epics, the Ramayana or Mahabharata">
+            Indian Epics (Ramayana / Mahabharata)
+          </option>
+          <option value="Ordering food at a restaurant">Ordering Food at a Restaurant</option>
+          <option value="A job interview">A Job Interview</option>
+          <option value="Traveling to a new country and asking for directions">
+            Travel & Directions
+          </option>
+          <option value="Negotiating a price at a market">Negotiating a Price</option>
+          <option value="A funny misunderstanding between friends">
+            Comedy / Misunderstanding
+          </option>
+          <option value="A mystery set in a small village">Small Village Mystery</option>
+        </select>
+        <button
+          className="btn-primary relative flex-shrink-0"
+          onClick={() => fetchNewStory(topic)}
+          disabled={isLoading}
+          aria-label="Generate new story"
+        >
+          <RestartIcon />
+          <span>{isLoading ? 'Generating…' : 'New Story'}</span>
+          {isLoading && (
+            <span
+              className="absolute bottom-0 left-0 h-0.5 bg-white/40 transition-all duration-300"
+              style={{ width: `${loadingProgress}%` }}
+            />
+          )}
+        </button>
       </div>
 
       {/* Story text */}

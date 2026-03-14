@@ -1,5 +1,5 @@
-import { useState, useLayoutEffect, useRef } from 'react';
-import { CloseIcon, SendIcon } from '../ui/Icons';
+import { useState, useLayoutEffect, useRef, useEffect, useCallback } from 'react';
+import { CloseIcon, SendIcon, MicIcon } from '../ui/Icons';
 
 /**
  * @param {{
@@ -12,7 +12,70 @@ import { CloseIcon, SendIcon } from '../ui/Icons';
  */
 const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping }) => {
   const [input, setInput] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
   const messagesEndRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onresult = (e) => {
+          const transcript = e.results[0][0].transcript;
+          setInput(transcript);
+          // Auto-send when speaking is done
+          if (transcript.trim()) {
+            onSendMessage(transcript.trim());
+            setInput('');
+          }
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onend = () => setIsListening(false);
+        recognitionRef.current.onerror = (e) => {
+          console.error('Speech recognition error:', e.error);
+          setIsListening(false);
+        };
+      }
+    }
+    return () => {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    };
+  }, [onSendMessage]);
+
+  const toggleListen = useCallback(() => {
+    if (!recognitionRef.current) return alert('Speech recognition not supported in this browser.');
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setVoiceMode(true); // Enable voice mode if they start using the mic
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  }, [isListening]);
+
+  // Read out bot replies if Voice Mode is active
+  useEffect(() => {
+    if (voiceMode && !isBotTyping && chatHistory.length > 0) {
+      const lastMsg = chatHistory[chatHistory.length - 1];
+      if (lastMsg.role === 'bot') {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(lastMsg.text);
+        utterance.lang = 'en-US';
+        // Auto-restart listening after speaking? Optional, keep it manual to avoid infinite loops
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  }, [chatHistory, isBotTyping, voiceMode]);
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -108,7 +171,19 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
 
         {/* Input */}
         <footer className="p-4 border-t border-slate-200">
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+            <button
+              type="button"
+              className={`p-3 rounded-xl transition-all ${
+                isListening
+                  ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/40'
+                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+              }`}
+              onClick={toggleListen}
+              aria-label={isListening ? 'Stop listening' : 'Start voice input'}
+            >
+              <MicIcon />
+            </button>
             <input
               id="chatbot-input"
               type="text"
@@ -116,14 +191,17 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
                          placeholder:text-slate-400 focus:ring-2 focus:ring-brand-300 focus:border-brand-400 outline-none
                          transition-shadow text-sm"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                if (e.target.value) setVoiceMode(false); // If they type, turn off auto-speak
+              }}
               placeholder="Ask an English question…"
               autoComplete="off"
               aria-label="Chat message"
             />
             <button
               type="submit"
-              className="btn-primary rounded-xl px-4"
+              className="btn-primary rounded-xl px-4 h-[46px]"
               disabled={isBotTyping || !input.trim()}
               aria-label="Send message"
             >
