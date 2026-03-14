@@ -1,104 +1,177 @@
-# 🎓 AI English Tutor  
+# 🚀 AI English Tutor
 
-> Learn English the smart way—through stories, typing, and pronunciation practice with AI feedback.  
+> A production-ready React + Vite application for learning English through AI-generated stories, typing practice, and pronunciation feedback.
 
-English is more than a subject—it’s the key to opportunity. Yet many learners, especially in India, struggle with confidence in **speaking, typing, and pronunciation**. The **AI English Tutor** was built to solve this problem.  
-
-This app combines **AI-powered storytelling, typing drills, pronunciation practice, and a friendly chatbot tutor** to make learning English not just effective, but engaging and fun.  
-
----
-
-## 🚀 Description  
-
-This application serves as a personal English learning companion. It leverages the power of **Google’s Gemini AI** to generate unique stories, provide translations, and offer intelligent assistance, making the learning process engaging and effective.  
-
-Whether you’re looking to improve your **reading, typing, pronunciation, or vocabulary**, this app has a feature to help you achieve your goals.  
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vitejs.dev)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
+[![Gemini](https://img.shields.io/badge/Gemini_AI-2.5_Flash-4285F4?logo=google)](https://ai.google.dev)
 
 ---
 
-## ✨ Key Features  
+## ✨ Features
 
-- **📖 AI-Generated Stories** – Short moral stories tailored to your English proficiency level (Beginner, Intermediate, Advanced).  
-- **⌨️ Interactive Typing Practice** – Improve typing speed and accuracy by retyping the generated stories, with real-time WPM and accuracy tracking.  
-- **🔊 Pronunciation Feedback** – Read stories aloud and receive AI-powered scoring with word-by-word feedback.  
-- **🌐 Instant Translation** – Long-press any word to see translations in your native language (Hindi or Telugu).  
-- **🤖 LiftBot AI Assistant** – A helpful chatbot to practice grammar, vocabulary, and conversation.  
-- **✨ Personalized Exercises** – Custom practice sentences based on the mistakes you make while typing or speaking.  
-- **📊 Progress Tracking** – Profile page with streaks, goal completion, and charts for WPM & accuracy.  
-- **👋 Friendly Onboarding** – Simple setup to pick your language and explore the features.  
-
----
-
-## 📸 Preview  
-
-_Add screenshots or GIFs of the app here (e.g., Learn, Type, Pronounce pages)._  
+| Feature                       | Description                                                        |
+| ----------------------------- | ------------------------------------------------------------------ |
+| 📖 **Learn Stories**          | AI-generated moral stories from Indian epics at your English level |
+| 🌐 **Word Translation**       | Long-press any word for an instant Hindi/Telugu tooltip            |
+| ⌨️ **Typing Practice**        | Real-time WPM and accuracy tracking                                |
+| 🔊 **Pronunciation Practice** | Mic-based scoring with per-word feedback                           |
+| 🤖 **LiftBot Chatbot**        | AI English tutor available at any time                             |
+| 📊 **Progress Tracking**      | Streak, daily goals, and sparkline performance charts              |
+| 🌏 **Bilingual Support**      | Hindi and Telugu translation support                               |
 
 ---
 
-## 🛠️ How to Use  
+## 🏗️ Project Structure
 
-### 1. Getting Started  
-- Select your **mother tongue** (Hindi or Telugu).  
-- Get a quick tour of the main features.  
-
-### 2. Learning a Story  
-- Go to **Learn** → read the AI-generated story.  
-- Click **New Story** for fresh content.  
-- Long-press words for translations.  
-- Click **Listen** to hear the story aloud.  
-
-### 3. Typing Practice  
-- Open **Type** and retype the current story.  
-- See **WPM & accuracy** updated live.  
-- Get personalized practice exercises based on your mistakes.  
-
-### 4. Pronunciation Practice  
-- In **Pronounce**, type any word or sentence to hear its pronunciation.  
-- Use mic to **read the passage aloud**.  
-- Get AI scoring with **color-coded word feedback**.  
-
-### 5. Chat with LiftBot  
-- Tap the **chat icon** (bottom-right).  
-- Ask questions about English grammar, vocabulary, or conversation.  
-
-### 6. Profile & Settings  
-- Manage your name, daily streak, and goals.  
-- View progress charts for typing speed & accuracy.  
-- Adjust proficiency level and native language.  
-
----
-
-## 💻 Technology Stack  
-
-- **Frontend**: React, TypeScript, Vite, Tailwind CSS  
-- **AI**: Google Gemini API (`@google/genai`)  
+```
+ai-english-tutor/
+├── public/                  # Static assets (favicon, og-image)
+├── src/
+│   ├── assets/              # App images & icons
+│   ├── components/
+│   │   ├── chatbot/         # ChatbotFab, ChatbotModal
+│   │   ├── learn/           # LearnSection, WordPopup
+│   │   ├── onboarding/      # OnboardingModal
+│   │   ├── profile/         # ProfileModal
+│   │   ├── pronounce/       # PronouncePractice
+│   │   ├── type/            # TypingPractice
+│   │   └── ui/              # Card, Icons, Notification, SparklineChart, ...
+│   ├── data/                # initialData seed
+│   ├── hooks/               # useLocalStorage, useGoals, useProgress
+│   ├── layouts/             # RootLayout (header + mobile nav)
+│   ├── pages/               # HomePage, LearnPage, TypePage, PronouncePage, HelpPage
+│   ├── services/            # geminiService (Gemini AI API)
+│   ├── styles/              # index.css (Tailwind + custom utilities)
+│   ├── types/               # JSDoc type definitions
+│   ├── utils/               # tokenizeWithSpaces, similarityPct, ...
+│   ├── App.jsx              # Root component with routing & state
+│   └── main.jsx             # Entry point
+├── .env.example             # Environment variable template
+├── .gitignore
+├── index.html               # Vite HTML template with SEO meta
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+├── vite.config.js
+└── README.md
+```
 
 ---
 
-## 🔧 Local Setup  
+## 🚀 Quick Start
 
-This project is built with **Vite** for fast development.  
+### 1. Clone & install
 
-### Local Development  
+```bash
+git clone https://github.com/your-username/ai-english-tutor.git
+cd ai-english-tutor
+npm install
+```
 
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/yourusername/ai-english-tutor.git
-   cd ai-english-tutor
-2. Install dependencies:
-   ```bash
-   npm install
+### 2. Set up API key
 
-3. Add your Gemini API key:
-Create a .env.local file in the root:
-   ```bash
-   VITE_API_KEY=your_gemini_api_key_here
+```bash
+cp .env.example .env
+# Edit .env and set VITE_GEMINI_API_KEY=your_api_key_here
+```
 
-4. Run the dev server:
-   ```bash
-   npm run dev
+Get a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-Open http://localhost:5173
- in your browser.
+### 3. Run locally
 
- 
+```bash
+npm run dev
+# Opens at http://localhost:3000
+```
+
+---
+
+## 🔨 Available Scripts
+
+| Command           | Description                        |
+| ----------------- | ---------------------------------- |
+| `npm run dev`     | Start Vite dev server on port 3000 |
+| `npm run build`   | Build production bundle to `dist/` |
+| `npm run preview` | Preview production build locally   |
+| `npm run lint`    | Run ESLint                         |
+| `npm run format`  | Run Prettier formatter             |
+
+---
+
+## 🌍 Deployment
+
+### Vercel (recommended)
+
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+Set `VITE_GEMINI_API_KEY` in Vercel's Environment Variables dashboard.
+
+### Netlify
+
+```bash
+npm run build
+# Deploy dist/ folder via Netlify UI or CLI
+# Build command: npm run build  |  Publish dir: dist
+```
+
+Add `VITE_GEMINI_API_KEY` in Site Settings → Environment Variables.
+
+### GitHub Pages
+
+```bash
+# 1. Install gh-pages
+npm install -D gh-pages
+
+# 2. Add to package.json scripts:
+#    "predeploy": "npm run build",
+#    "deploy": "gh-pages -d dist"
+
+# 3. Set vite.config.js base to your repo name:
+#    base: '/ai-english-tutor/'
+
+npm run deploy
+```
+
+---
+
+## 📤 Push to GitHub
+
+```bash
+git init
+git add .
+git commit -m "feat: production-ready React + Vite AI English Tutor"
+git branch -M main
+git remote add origin https://github.com/your-username/ai-english-tutor.git
+git push -u origin main
+```
+
+---
+
+## 🔑 Environment Variables
+
+| Variable              | Description                           |
+| --------------------- | ------------------------------------- |
+| `VITE_GEMINI_API_KEY` | Your Google Gemini API key (required) |
+
+---
+
+## 🛠️ Tech Stack
+
+- **React 18** – UI library
+- **Vite 5** – Build tool with HMR
+- **TailwindCSS 3** – Utility-first styling
+- **React Router 6** – Client-side routing
+- **@google/genai** – Gemini AI SDK
+- **GSAP** – Animation library (available for future enhancements)
+- **Web Speech API** – TTS + speech recognition (browser native)
+
+---
+
+## 📄 Licence
+
+MIT © 2026 AI English Tutor
