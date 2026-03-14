@@ -13,6 +13,9 @@ import { useGoals } from './hooks/useGoals';
 import { useProgress } from './hooks/useProgress';
 import { initialStory, initialDictionary } from './data/initialData';
 import * as geminiService from './services/geminiService';
+import { playSuccessSound } from './utils/audio';
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from './components/ui/PageTransition';
 
 // ── Lazy-loaded pages ──────────────────────────────────────────────────────────
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -115,6 +118,7 @@ function App() {
   // ── Session complete handlers ──
   const handleTypingComplete = useCallback(
     async (summary) => {
+      if (summary.accuracy >= 80) playSuccessSound();
       addRecord({ ...summary, type: 'typing', ts: Date.now() });
       goalsManager.incrementGoal('type50', summary.typedChars);
       if (summary.incorrectWords.length > 0) {
@@ -132,6 +136,7 @@ function App() {
 
   const handlePronounceComplete = useCallback(
     async (summary) => {
+      if (summary.score >= 75) playSuccessSound();
       addRecord({ ...summary, type: 'pronounce', ts: Date.now() });
       goalsManager.incrementGoal('pron10');
       if (summary.incorrectWords.length > 0) {
@@ -194,46 +199,75 @@ function App() {
       {/* App shell */}
       <RootLayout userName={userName} onProfileOpen={() => setProfileOpen(true)}>
         <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route
-              path="/learn"
-              element={
-                <LearnPage
-                  {...storyPageProps}
-                  lang={lang}
-                  dictionary={dictionary}
-                  fetchNewStory={fetchNewStory}
-                  isLoading={isLoading}
-                  loadingProgress={loadingProgress}
-                />
-              }
-            />
-            <Route
-              path="/type"
-              element={<TypePage {...storyPageProps} onSessionComplete={handleTypingComplete} />}
-            />
-            <Route
-              path="/pronounce"
-              element={
-                <PronouncePage {...storyPageProps} onSessionComplete={handlePronounceComplete} />
-              }
-            />
-            <Route path="/help" element={<HelpPage />} />
-            {/* 404 fallback */}
-            <Route
-              path="*"
-              element={
-                <div className="text-center py-24">
-                  <div className="text-6xl mb-4">😕</div>
-                  <h1 className="text-2xl font-bold text-slate-800 mb-2">Page Not Found</h1>
-                  <Link to="/" className="btn-primary inline-flex mt-4">
-                    Go Home
-                  </Link>
-                </div>
-              }
-            />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route
+                path="/"
+                element={
+                  <PageTransition>
+                    <HomePage />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/learn"
+                element={
+                  <PageTransition>
+                    <LearnPage
+                      {...storyPageProps}
+                      lang={lang}
+                      dictionary={dictionary}
+                      fetchNewStory={fetchNewStory}
+                      isLoading={isLoading}
+                      loadingProgress={loadingProgress}
+                    />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/type"
+                element={
+                  <PageTransition>
+                    <TypePage {...storyPageProps} onSessionComplete={handleTypingComplete} />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/pronounce"
+                element={
+                  <PageTransition>
+                    <PronouncePage
+                      {...storyPageProps}
+                      onSessionComplete={handlePronounceComplete}
+                    />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/help"
+                element={
+                  <PageTransition>
+                    <HelpPage />
+                  </PageTransition>
+                }
+              />
+              {/* 404 fallback */}
+              <Route
+                path="*"
+                element={
+                  <PageTransition>
+                    <div className="text-center py-24">
+                      <div className="text-6xl mb-4">😕</div>
+                      <h1 className="text-2xl font-bold text-slate-800 mb-2">Page Not Found</h1>
+                      <Link to="/" className="btn-primary inline-flex mt-4">
+                        Go Home
+                      </Link>
+                    </div>
+                  </PageTransition>
+                }
+              />
+            </Routes>
+          </AnimatePresence>
         </Suspense>
       </RootLayout>
 

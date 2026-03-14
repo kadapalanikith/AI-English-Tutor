@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ProfileIcon, LearnIcon, TypeIcon, PronounceIcon } from '../components/ui/Icons';
+import { playPopSound } from '../utils/audio';
 
 // Proper house-shaped home icon for the mobile nav
 const NavHomeIcon = () => (
@@ -67,6 +68,7 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
                   to={path}
                   id={`nav-${label.toLowerCase()}`}
                   className={`nav-pill ${active ? 'active' : ''}`}
+                  onClick={() => !active && playPopSound()}
                 >
                   <Icon />
                   <span>{label}</span>
@@ -77,7 +79,10 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
 
           {/* Profile button */}
           <button
-            onClick={onProfileOpen}
+            onClick={() => {
+              playPopSound();
+              onProfileOpen();
+            }}
             className="flex items-center gap-2 text-slate-600 hover:text-brand-600 transition-colors"
             aria-label="Open my profile"
             id="header-profile-btn"
@@ -108,6 +113,7 @@ const RootLayout = ({ children, userName, onProfileOpen }) => {
                 key={path}
                 to={path}
                 id={`mobile-nav-${label.toLowerCase()}`}
+                onClick={() => !active && playPopSound()}
                 className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-2xl text-[11px] font-bold transition-all duration-300 ${
                   active
                     ? 'text-brand-700 bg-brand-50 shadow-sm'

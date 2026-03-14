@@ -1,5 +1,7 @@
 import { ChatbotIcon } from '../ui/Icons';
 
+import { playPopSound } from '../../utils/audio';
+
 /**
  * Floating action button that opens the chatbot.
  * @param {{ onClick: () => void }} props
@@ -10,7 +12,10 @@ const ChatbotFab = ({ onClick }) => (
       className="w-14 h-14 md:w-16 md:h-16 bg-brand-600 text-white rounded-full flex items-center justify-center
                  shadow-xl shadow-brand-600/40 hover:bg-brand-700 hover:-translate-y-1 hover:shadow-2xl
                  active:scale-95 transition-all duration-300"
-      onClick={onClick}
+      onClick={() => {
+        playPopSound();
+        onClick();
+      }}
       aria-label="Open AI chatbot"
       id="chatbot-fab"
     >
