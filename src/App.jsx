@@ -189,8 +189,14 @@ function App() {
 
   const clearExercise = useCallback(() => setPersonalizedExercise(null), []);
 
+  const averageWpm = useMemo(() => {
+    const typeRecords = records.filter((r) => r.type === 'typing');
+    if (typeRecords.length === 0) return 30; // 30 is a beginner baseline default
+    return Math.round(typeRecords.reduce((acc, r) => acc + (r.wpm || 0), 0) / typeRecords.length);
+  }, [records]);
+
   // ── Common page props ──
-  const storyPageProps = { story: currentStory, personalizedExercise, clearExercise };
+  const storyPageProps = { story: currentStory, personalizedExercise, clearExercise, averageWpm };
 
   return (
     <>

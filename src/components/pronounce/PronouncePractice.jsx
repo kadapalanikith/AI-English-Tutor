@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import * as Diff from 'diff';
 import Card from '../ui/Card';
 import { MicIcon, RestartIcon, SpeakerIcon, CloseIcon } from '../ui/Icons';
 import { similarityPct } from '../../utils';
@@ -75,11 +76,30 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
         const originalTokens = text.split(/\s+/).filter(Boolean);
         const spokenTokens = result.split(/\s+/).filter(Boolean);
 
-        const calculatedWordScores = originalTokens.map((originalToken, index) => {
-          const spokenToken = spokenTokens[index] || '';
-          const cleanOriginal = originalToken.toLowerCase().replace(/[.,]/g, '');
-          const cleanSpoken = spokenToken.toLowerCase().replace(/[.,]/g, '');
-          return { word: originalToken, score: similarityPct(cleanOriginal, cleanSpoken) };
+        const diffs = Diff.diffArrays(
+          originalTokens.map((t) => t.toLowerCase().replace(/[.,!?]/g, '')),
+          spokenTokens.map((t) => t.toLowerCase().replace(/[.,!?]/g, '')),
+        );
+
+        let origIdx = 0;
+        const calculatedWordScores = [];
+
+        diffs.forEach((part) => {
+          if (part.added) {
+            // Extra words spoken, ignored for highlighting
+          } else if (part.removed) {
+            // Words missed
+            part.value.forEach(() => {
+              calculatedWordScores.push({ word: originalTokens[origIdx], score: 0 });
+              origIdx++;
+            });
+          } else {
+            // Words correctly spoken
+            part.value.forEach(() => {
+              calculatedWordScores.push({ word: originalTokens[origIdx], score: 100 });
+              origIdx++;
+            });
+          }
         });
         setWordScores(calculatedWordScores);
 

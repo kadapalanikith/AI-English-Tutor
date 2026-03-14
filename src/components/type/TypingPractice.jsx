@@ -27,15 +27,30 @@ CharSpan.displayName = 'CharSpan';
  * @param {{
  *   text: string;
  *   onSessionComplete: (summary: Object) => void;
+ *   averageWpm: number;
  * }} props
  */
-const TypingPractice = ({ text, onSessionComplete }) => {
+const TypingPractice = ({ text, onSessionComplete, averageWpm = 30 }) => {
   const chars = useMemo(() => text.split(''), [text]);
 
   const [pos, setPos] = useState(0);
   const [status, setStatus] = useState(() => Array(chars.length).fill(null));
   const [startedAt, setStartedAt] = useState(null);
   const [endedAt, setEndedAt] = useState(null);
+  const [liveElapsedMs, setLiveElapsedMs] = useState(0);
+
+  // Live timer for Ghost Racer (updates 10x per second)
+  useEffect(() => {
+    let intervalId;
+    if (startedAt && !endedAt) {
+      intervalId = setInterval(() => {
+        setLiveElapsedMs(Date.now() - startedAt);
+      }, 100);
+    } else if (endedAt) {
+      setLiveElapsedMs(endedAt - startedAt);
+    }
+    return () => clearInterval(intervalId);
+  }, [startedAt, endedAt]);
 
   // Reset when text changes
   useEffect(() => {
@@ -43,6 +58,7 @@ const TypingPractice = ({ text, onSessionComplete }) => {
     setPos(0);
     setStartedAt(null);
     setEndedAt(null);
+    setLiveElapsedMs(0);
   }, [text, chars.length]);
 
   // Keyboard handler
@@ -127,9 +143,15 @@ const TypingPractice = ({ text, onSessionComplete }) => {
   const typedCount = status.filter((s) => s !== null).length;
   const correctCount = status.filter((s) => s === true).length;
   const accuracy = typedCount ? Math.round((correctCount / typedCount) * 100) : 100;
-  const elapsedMs = startedAt ? (endedAt || Date.now()) - startedAt : 0;
+  const elapsedMs = liveElapsedMs;
   const wpmLive =
     startedAt && elapsedMs > 1000 ? Math.round(correctCount / 5 / (elapsedMs / 60000)) : 0;
+
+  // Ghost calculation: (averageWpm * 5) chars per minute
+  const charsPerMs = (averageWpm * 5) / 60000;
+  const ghostChars = Math.min(chars.length, Math.floor(elapsedMs * charsPerMs));
+  const myProgress = Math.min(100, Math.round((typedCount / chars.length) * 100));
+  const ghostProgress = Math.min(100, Math.round((ghostChars / chars.length) * 100));
 
   return (
     <Card>
@@ -166,13 +188,43 @@ const TypingPractice = ({ text, onSessionComplete }) => {
         ))}
       </div>
 
+      {/* Ghost Racer UI */}
+      <div className="mt-6 flex flex-col gap-3 pb-2 select-none">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          Race against yourself
+        </h3>
+
+        {/* User (Blue) */}
+        <div className="relative h-6 bg-slate-100 rounded-full w-full shadow-inner border border-slate-200">
+          <div
+            className="absolute top-0 left-0 h-full bg-brand-500 rounded-full transition-all duration-200 shadow-md flex items-center justify-end px-2"
+            style={{ width: `${Math.max(5, myProgress)}%` }}
+          >
+            <span className="text-sm">🏎️</span>
+          </div>
+        </div>
+
+        {/* Ghost (Gray) */}
+        <div className="relative h-6 bg-slate-100 rounded-full w-full shadow-inner border border-slate-200 opacity-60">
+          <div
+            className="absolute top-0 left-0 h-full bg-slate-400 rounded-full transition-all duration-200 flex items-center justify-end px-2"
+            style={{ width: `${Math.max(5, ghostProgress)}%` }}
+          >
+            <span className="text-sm">👻</span>
+          </div>
+          <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+            <span className="text-[10px] font-bold text-slate-400">Avg {averageWpm} WPM</span>
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
-      <div className="flex gap-4 mt-4 items-center">
+      <div className="flex gap-4 mt-8 items-center border-t border-slate-100 pt-4">
         <button onClick={reset} className="btn-primary" id="typing-restart-btn">
           <RestartIcon />
           <span>Restart</span>
         </button>
-        <div className="ml-auto text-sm text-slate-400">
+        <div className="ml-auto text-sm font-medium text-slate-500">
           {typedCount} / {chars.length} characters
         </div>
       </div>

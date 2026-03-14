@@ -155,3 +155,34 @@ export async function generatePersonalizedExercise(context, incorrectWords) {
   const response = await ai.models.generateContent({ model: MODEL, contents: prompt });
   return response.text;
 }
+
+/**
+ * Instantly translates a single English word into Hindi and Telugu.
+ * @param {string} word
+ */
+export async function translateSingleWord(word) {
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL,
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: `Translate the English word "${word}" into Hindi and Telugu. Keep it very short, just the word.`,
+            },
+          ],
+        },
+      ],
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: textTranslationSchema,
+        temperature: 0.1,
+      },
+    });
+    return JSON.parse(response.text);
+  } catch (err) {
+    console.error('[geminiService] translateSingleWord error:', err);
+    return { hi: '—', te: '—' };
+  }
+}

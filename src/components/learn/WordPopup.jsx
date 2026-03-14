@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { normalizeKey } from '../../utils';
+import { translateSingleWord } from '../../services/geminiService';
 
 /**
  * Inline word with a long-press translation popup.
@@ -7,21 +8,44 @@ import { normalizeKey } from '../../utils';
  */
 const WordPopup = ({ token, lang, dictionary }) => {
   const [popup, setPopup] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef(null);
 
-  const showPopup = useCallback(() => {
+  const showPopup = useCallback(async () => {
     const key = normalizeKey(token);
-    const translation = dictionary[lang]?.[key] || '—';
-    setPopup(translation);
+
+    // Speak out loud immediately
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(key);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+
+    if (dictionary[lang]?.[key]) {
+      setPopup(dictionary[lang][key]);
+    } else {
+      setIsLoading(true);
+      setPopup('…'); // Loading indicator
+      const trans = await translateSingleWord(key);
+      setPopup(trans[lang] || '—');
+      setIsLoading(false);
+    }
   }, [token, lang, dictionary]);
 
   const startTimer = useCallback(() => {
-    timerRef.current = setTimeout(showPopup, 300);
+    // Shorter hold threshold for immediate feedback (150ms)
+    timerRef.current = setTimeout(showPopup, 150);
   }, [showPopup]);
 
   const clearTimer = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    setPopup(null);
+    // Don't close immediately if it's loading so they can see the result, or close it if they let go.
+    // For "click-to-define", let it disappear when mouse leaves.
+    setTimeout(() => {
+      setPopup(null);
+      setIsLoading(false);
+    }, 1000); // 1 sec delay before disappearing
   }, []);
 
   return (
@@ -38,9 +62,26 @@ const WordPopup = ({ token, lang, dictionary }) => {
     >
       {token}
       {popup && (
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-800 text-white rounded-xl text-sm font-semibold whitespace-nowrap z-10 shadow-xl animate-fade-in">
-          {popup}
-          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-brand-800 text-white rounded-xl text-sm font-semibold whitespace-nowrap z-10 shadow-2xl animate-fade-in border border-brand-700">
+          {isLoading ? (
+            <span className="animate-pulse flex space-x-1">
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-white animate-bounce"
+                style={{ animationDelay: '0ms' }}
+              />
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-white animate-bounce"
+                style={{ animationDelay: '150ms' }}
+              />
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-white animate-bounce"
+                style={{ animationDelay: '300ms' }}
+              />
+            </span>
+          ) : (
+            popup
+          )}
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-brand-800" />
         </span>
       )}
     </span>

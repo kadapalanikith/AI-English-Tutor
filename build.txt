@@ -1,0 +1,24 @@
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 1355 modules transformed.
+[31mx[39m Build failed in 2.90s
+[31merror during build:
+[31m[vite-plugin-pwa:build] There was an error during the build:
+  src/components/learn/WordPopup.jsx (3:9): "translateSingleWord" is not exported by "src/services/geminiService.js", imported by "src/components/learn/WordPopup.jsx".
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  src/components/learn/WordPopup.jsx (3:9): "translateSingleWord" is not exported by "src/services/geminiService.js", imported by "src/components/learn/WordPopup.jsx".[31m
+file: [36mC:/Users/NANDA KRISHNA/Downloads/AI-English-Tutor/src/components/learn/WordPopup.jsx:3:9[31m
+[33m
+1: import { useState, useRef, useCallback } from 'react';
+2: import { normalizeKey } from '../../utils';
+3: import { translateSingleWord } from '../../services/geminiService';
+            ^
+4: 
+5: /**
+[31m
+    at getRollupError (file:///C:/Users/NANDA%20KRISHNA/Downloads/AI-English-Tutor/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at file:///C:/Users/NANDA%20KRISHNA/Downloads/AI-English-Tutor/node_modules/rollup/dist/es/shared/node-entry.js:23467:39
+    at async catchUnfinishedHookActions (file:///C:/Users/NANDA%20KRISHNA/Downloads/AI-English-Tutor/node_modules/rollup/dist/es/shared/node-entry.js:22925:16)
+    at async rollupInternal (file:///C:/Users/NANDA%20KRISHNA/Downloads/AI-English-Tutor/node_modules/rollup/dist/es/shared/node-entry.js:23450:5)
+    at async build (file:///C:/Users/NANDA%20KRISHNA/Downloads/AI-English-Tutor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65709:14)
+    at async CAC.<anonymous> (file:///C:/Users/NANDA%20KRISHNA/Downloads/AI-English-Tutor/node_modules/vite/dist/node/cli.js:829:5)[39m

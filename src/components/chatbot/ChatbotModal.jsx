@@ -1,4 +1,5 @@
 import { useState, useLayoutEffect, useRef, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { CloseIcon, SendIcon, MicIcon } from '../ui/Icons';
 
 /**
@@ -147,7 +148,13 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
                   : 'bg-white border border-slate-200 text-slate-800 self-start rounded-bl-md shadow-sm'
               }`}
             >
-              {msg.text}
+              {msg.role === 'user' ? (
+                msg.text
+              ) : (
+                <article className="prose prose-sm prose-slate max-w-none prose-p:my-1 prose-strong:text-brand-700">
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </article>
+              )}
             </div>
           ))}
           {isBotTyping && (
