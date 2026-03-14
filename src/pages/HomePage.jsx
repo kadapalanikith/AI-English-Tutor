@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { LearnIcon, TypeIcon, PronounceIcon } from '../components/ui/Icons';
 
 const features = [
   {

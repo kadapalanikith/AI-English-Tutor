@@ -1,16 +1,18 @@
 import { GoogleGenAI, Type } from '@google/genai';
 
 // ─── API Key ───────────────────────────────────────────────────────────────────
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || process.env.API_KEY || process.env.GEMINI_API_KEY;
+// In Vite, only import.meta.env.VITE_* vars are available in the browser.
+// process.env is NOT available at runtime (only replaced at build time if defined).
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
   console.error(
-    '[geminiService] FATAL: No API key found. ' +
-    'Set VITE_GEMINI_API_KEY in your .env file.'
+    '[geminiService] No API key found. ' +
+    'Create a .env file and set VITE_GEMINI_API_KEY=your_key_here',
   );
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY || '' });
+const ai = new GoogleGenAI({ apiKey: API_KEY ?? 'MISSING_KEY' });
 
 // ─── Schemas ───────────────────────────────────────────────────────────────────
 const storySchema = {

@@ -119,7 +119,7 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
     window.speechSynthesis.speak(utterance);
   }, [ttsInput, isSpeaking]);
 
-  const handleListen = () => {
+  const handleListen = useCallback(() => {
     if (isListening) {
       shouldProcessOnEnd.current = true;
       recognitionRef.current?.stop();
@@ -165,14 +165,14 @@ const PronouncePractice = ({ text, onSessionComplete }) => {
       recognition.start();
       setIsListening(true);
     }
-  };
+  }, [isListening, reset]);
 
   return (
     <Card>
       {/* TTS section */}
       <div className="pb-4 border-b border-slate-200 mb-4">
         <h3 className="text-lg font-bold text-slate-800">Hear it First</h3>
-        <p className="text-sm text-slate-500 mt-0.5 mb-3">Type a word or sentence to hear how it's pronounced.</p>
+        <p className="text-sm text-slate-500 mt-0.5 mb-3">Type a word or sentence to hear how it&apos;s pronounced.</p>
         <div className="flex gap-2">
           <div className="relative flex-grow">
             <input

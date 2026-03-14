@@ -20,7 +20,7 @@ const PersonalizedExercise = ({ exercise, onDismiss }) => {
         </button>
       </div>
       <p className="text-slate-600 mb-3">
-        Here's a special exercise based on your last session to help you improve:
+        Here&apos;s a special exercise based on your last session to help you improve:
       </p>
       <div className="p-4 bg-brand-50 rounded-xl text-xl leading-relaxed text-slate-700">
         {exercise}

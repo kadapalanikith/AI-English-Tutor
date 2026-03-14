@@ -89,7 +89,7 @@ const ProfileModal = ({
         {/* Daily goals */}
         {goals.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-base font-bold text-slate-700 mb-3">Today's Goals</h3>
+            <h3 className="text-base font-bold text-slate-700 mb-3">Today&apos;s Goals</h3>
             <div className="space-y-2">
               {goals.map((g) => (
                 <div key={g.id} className="flex items-center gap-3">

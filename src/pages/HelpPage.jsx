@@ -46,7 +46,7 @@ const HelpPage = () => {
 
       <Card>
         <h1 className="text-xl font-bold text-slate-800 mb-2">How to Use Your AI English Tutor</h1>
-        <p className="text-slate-500 mb-6">Your personal guide to mastering English. Here's a quick tour of the features:</p>
+        <p className="text-slate-500 mb-6">Your personal guide to mastering English. Here&apos;s a quick tour of the features:</p>
 
         <div className="space-y-6">
           {sections.map((s) => (

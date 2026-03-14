@@ -67,7 +67,7 @@ const ChatbotModal = ({ isOpen, onClose, chatHistory, onSendMessage, isBotTyping
           {chatHistory.length === 0 && (
             <div className="text-center text-slate-400 text-sm mt-8">
               <div className="text-4xl mb-3">👋</div>
-              <p>Hi! I'm LiftBot. Ask me anything about English grammar, vocabulary, or how to use this app!</p>
+              <p>Hi! I&apos;m LiftBot. Ask me anything about English grammar, vocabulary, or how to use this app!</p>
             </div>
           )}
           {chatHistory.map((msg, index) => (

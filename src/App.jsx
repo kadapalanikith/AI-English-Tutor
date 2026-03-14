@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 
 import RootLayout            from './layouts/RootLayout';
 import Notification           from './components/ui/Notification';
@@ -27,7 +27,7 @@ const PageLoader = () => (
     <div className="flex gap-2">
       {[0, 150, 300].map((delay) => (
         <div
-          key={delay}
+          key={`loader-${delay}`}
           className="w-3 h-3 bg-brand-500 rounded-full animate-bounce"
           style={{ animationDelay: `${delay}ms` }}
         />
@@ -200,7 +200,7 @@ function App() {
               <div className="text-center py-24">
                 <div className="text-6xl mb-4">😕</div>
                 <h1 className="text-2xl font-bold text-slate-800 mb-2">Page Not Found</h1>
-                <a href="/" className="btn-primary inline-flex mt-4">Go Home</a>
+                <Link to="/" className="btn-primary inline-flex mt-4">Go Home</Link>
               </div>
             } />
           </Routes>
