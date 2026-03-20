@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Card from '../components/ui/Card';
 import { generateGrammarQuiz } from '../services/geminiService';
 import { playSuccessSound, playPopSound } from '../utils/audio';
-import { QuizIcon } from '../components/ui/Icons';
 
 const QuizPage = ({ englishLevel }) => {
   const [questions, setQuestions] = useState([]);
