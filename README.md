@@ -2,6 +2,8 @@
 
 > A production-ready React + Vite application for learning English through AI-generated stories, typing practice, and pronunciation feedback.
 
+**🌍 Live Demo:** [ai-english-tutor-rho.vercel.app](https://ai-english-tutor-rho.vercel.app/)
+
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
